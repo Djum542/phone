@@ -9,7 +9,7 @@ import com.gdu.nhom1.shopproject.jwt.JwtTokenUtil;
 import com.gdu.nhom1.shopproject.models.User;
 import com.gdu.nhom1.shopproject.repository.RoleRepositoryJwt;
 import com.gdu.nhom1.shopproject.repository.UserRepository;
-import com.gdu.nhom1.shopproject.repository.UserRepositoryJwt;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
@@ -31,8 +31,7 @@ public class AuthApi {
 	@Autowired AuthenticationManager authManager;
 	@Autowired
 	JwtTokenUtil jwtUtil;
-	UserRepository repositoryJwt;
-	RoleRepositoryJwt roleRepositoryJwt;
+
 	@PostMapping("/auth/login")
 	public ResponseEntity<?> login(@RequestBody @Valid AuthRequest request) {
 		try {

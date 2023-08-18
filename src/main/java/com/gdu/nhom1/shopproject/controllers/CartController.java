@@ -1,11 +1,20 @@
 package com.gdu.nhom1.shopproject.controllers;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import com.gdu.nhom1.shopproject.models.CartItem;
+import com.gdu.nhom1.shopproject.repository.CartItemReponsitory;
+import com.gdu.nhom1.shopproject.services.CartItemService;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,10 +39,10 @@ public class CartController {
 
     @Autowired
     BillService billServece;
-
+    CartItemService itemService;
     @Autowired
     UserService userService;
-
+    CartItemReponsitory reponsitory;
     private static List<Product> cart;
 
     public static void clearCart() {
@@ -67,13 +76,42 @@ public class CartController {
             product2.setQuantity(quantity);
             product2.setImageName(product.getImageName());
             cart.add(product2);
+
+
         }
+//
         session.setAttribute("cartCount", cart.size());
         // model.addAttribute("total",
         // cart.stream().mapToDouble(Product::getPrice).sum());
         session.setAttribute("total", cart.stream().mapToDouble(Product::getPrice).sum());
         return "redirect:/shop";
     }
+//    @PostMapping("/jsoncart")
+//    public ResponseEntity<FileReader> jsoncart() throws FileNotFoundException {
+//        Gson gson = new Gson();
+//        String json = gson.toJson(cart);
+//        try (FileWriter writer = new FileWriter("cart.json")) {
+//            writer.write(json);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        FileReader red = new FileReader("cart.json");
+////        try (FileReader reader = new FileReader("person.json")) {
+////            // Đọc nội dung từ tệp và chuyển đổi thành đối tượng
+////
+////        } catch (IOException e) {
+////            e.printStackTrace();
+////        }
+//        return ResponseEntity.ok(red);
+//    }
+    @GetMapping("/jsoncart")
+    public ResponseEntity<Model> jsoncart(Model model, HttpSession session){
+
+        model.addAttribute("cartitem", reponsitory.findAll());
+        session.setAttribute("session", session);
+        return ResponseEntity.ok(model);
+    }
+
 
     @PostMapping("/updateCart")
     public String updateCart(@RequestParam("productId") int productId,

@@ -25,8 +25,8 @@ import javax.validation.Valid;
 @Controller
 //@RequestMapping("/login")
 public class AuthController {
-    AuthenticationManager authManager;
-    JwtTokenUtil jwtUtil;
+//    AuthenticationManager authManager;
+//    JwtTokenUtil jwtUtil;
 
     @GetMapping("/login")
     public String login() {

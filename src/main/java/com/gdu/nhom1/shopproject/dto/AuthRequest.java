@@ -1,5 +1,6 @@
 package com.gdu.nhom1.shopproject.dto;
 
+import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 

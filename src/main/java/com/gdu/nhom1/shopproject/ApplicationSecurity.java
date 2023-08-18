@@ -3,7 +3,7 @@ package com.gdu.nhom1.shopproject;
 import javax.servlet.http.HttpServletResponse;
 
 import com.gdu.nhom1.shopproject.jwt.JwtTokenFilter;
-import com.gdu.nhom1.shopproject.repository.UserRepositoryJwt;
+import com.gdu.nhom1.shopproject.repository.UserRepository;
 import com.gdu.nhom1.shopproject.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -28,14 +28,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 
-	@Autowired private UserRepositoryJwt userRepo;
+	@Autowired private UserRepository userRepo;
 	@Autowired
 	UserService userService;
 	@Autowired private JwtTokenFilter jwtTokenFilter;
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(username -> userRepo.findByEmail(username)
+		auth.userDetailsService(username -> userRepo.findByEmailContainingIgnoreCase(username)
 				.orElseThrow(() -> new UsernameNotFoundException("User " + username + " not found.")));
 	}
 
@@ -50,8 +50,9 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
 		
 		http.authorizeRequests()
-				.antMatchers("/auth/login","/register**", "/", "/shop/**", "/login", "/json" ).permitAll()
-				.antMatchers("/users/**").hasRole("USER")
+				.antMatchers("/auth/login","/register**", "/", "/shop/**", "/login", "/json",
+						  "/jsonpro", "/jsoncart" ).permitAll()
+				//.antMatchers("/users/**").hasRole("USER")
 				.anyRequest().authenticated()
 				.and()
 				.formLogin()
@@ -81,11 +82,11 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 		return (web) -> web.ignoring().antMatchers("/resources/**", "/static/**", "/images/**", "/css/**", "/js/**",
 				"/error");
 	}// Bỏ xác minh các package đường dẫn này
-	@Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
-        auth.setUserDetailsService(userService);
-        auth.setPasswordEncoder(passwordEncoder());
-        return auth;
-    }
+//	@Bean
+//    public DaoAuthenticationProvider authenticationProvider() {
+//        DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
+//        auth.setUserDetailsService(userService);
+//        auth.setPasswordEncoder(passwordEncoder());
+//        return auth;
+//    }
 }
