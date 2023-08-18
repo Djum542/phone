@@ -36,7 +36,7 @@ public class JwtTokenUtil {
 				.claim("roles", user.getRoles().toString())
 				.setIssuedAt(new Date())
 				.setExpiration(new Date(System.currentTimeMillis() + EXPIRE_DURATION))
-				.signWith(SignatureAlgorithm.HS512, SECRET_KEY)
+				.signWith(SignatureAlgorithm.HS256, SECRET_KEY)
 				.compact();
 	}
 	

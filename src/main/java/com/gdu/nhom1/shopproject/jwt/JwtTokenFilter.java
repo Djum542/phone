@@ -23,7 +23,7 @@ import io.jsonwebtoken.Claims;
 
 @Component
 public class JwtTokenFilter extends OncePerRequestFilter {
-
+	@Autowired
 	private JwtTokenUtil jwtUtil;
 
 	@Override
@@ -38,10 +38,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
 		String token = getAccessToken(request);
 
-		if (!jwtUtil.validateAccessToken(token)) {
-			filterChain.doFilter(request, response);
-			return;
-		}
+//		if (!jwtUtil.validateAccessToken(token)) {
+//			filterChain.doFilter(request, response);
+//			return;
+//		}
 
 		setAuthenticationContext(token, request);
 		filterChain.doFilter(request, response);
@@ -64,7 +64,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
 	private void setAuthenticationContext(String token, HttpServletRequest request) {
 		UserDetails userDetails = getUserDetails(token);
-
+//		getAccessToken(request);
 		UsernamePasswordAuthenticationToken 
 			authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
@@ -76,17 +76,18 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
 	private UserDetails getUserDetails(String token) {
 		User userDetails = new User();
+
 		// jwt vuot qua quyen so huu
 		Claims claims = jwtUtil.parseClaims(token);
-		// chuyen gia tri chu de ve thanh motj chuoi
+		// chuyen gia tri chu de ve thanh mot chuoi
 		String subject = (String) claims.get(Claims.SUBJECT);
 		String roles = (String) claims.get("roles");
-		
+		String[] subjectArray = subject.split(",");
 		System.out.println("SUBJECT: " + subject);
 		System.out.println("roles: " + roles);
 		roles = roles.replace("[", "").replace("]", "");
 		String[] roleNames = roles.split(",");
-		
+		// xay dung lai quye nguoi dung.
 		for (String aRoleName : roleNames) {
 			userDetails.addRole(new Role(aRoleName));
 		}

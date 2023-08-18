@@ -42,6 +42,7 @@ public class CartController {
     CartItemService itemService;
     @Autowired
     UserService userService;
+    @Autowired
     CartItemReponsitory reponsitory;
     private static List<Product> cart;
 
