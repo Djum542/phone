@@ -76,7 +76,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
 	private UserDetails getUserDetails(String token) {
 		User userDetails = new User();
+		// jwt vuot qua quyen so huu
 		Claims claims = jwtUtil.parseClaims(token);
+		// chuyen gia tri chu de ve thanh motj chuoi
 		String subject = (String) claims.get(Claims.SUBJECT);
 		String roles = (String) claims.get("roles");
 		

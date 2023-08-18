@@ -51,7 +51,7 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 		
 		http.authorizeRequests()
 				.antMatchers("/auth/login","/register**", "/", "/shop/**", "/login", "/json",
-						  "/jsonpro", "/jsoncart" ).permitAll()
+						  "/jsonpro", "/jsoncart","/swagger-ui.html" ).permitAll()
 				//.antMatchers("/users/**").hasRole("USER")
 				.anyRequest().authenticated()
 				.and()
