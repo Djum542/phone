@@ -87,24 +87,43 @@ public class CartController {
         session.setAttribute("total", cart.stream().mapToDouble(Product::getPrice).sum());
         return "redirect:/shop";
     }
-//    @PostMapping("/jsoncart")
-//    public ResponseEntity<FileReader> jsoncart() throws FileNotFoundException {
-//        Gson gson = new Gson();
-//        String json = gson.toJson(cart);
-//        try (FileWriter writer = new FileWriter("cart.json")) {
-//            writer.write(json);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        FileReader red = new FileReader("cart.json");
-////        try (FileReader reader = new FileReader("person.json")) {
-////            // Đọc nội dung từ tệp và chuyển đổi thành đối tượng
-////
-////        } catch (IOException e) {
-////            e.printStackTrace();
-////        }
-//        return ResponseEntity.ok(red);
-//    }
+    @PostMapping("/addjsoncart")
+    public ResponseEntity<List> addjson(@RequestParam("productId") int productId,
+                            @RequestParam("quantity") int quantity, HttpSession session,
+                            Model model) {
+        Product product = productService.getProductById(productId).get();
+        if (cart == null) {
+            cart = new ArrayList<>();
+            session.setAttribute("cart", cart);
+        }
+        int current = cart.size();
+        for (int i = 0; i < cart.size(); i++) {
+            if (cart.get(i).getId() == productId) {
+                cart.get(i).setQuantity(quantity + cart.get(i).getQuantity());
+                cart.get(i).setPrice(cart.get(i).getQuantity() * product.getPrice());
+                current++;
+            }
+        }
+        if (current == cart.size()) {
+            Product product2 = new Product();
+            product2.setId(productId);
+            product2.setName(product.getName());
+            //product2.setCategory(product.getCategory());
+            product2.setPrice(product.getPrice() * quantity);
+            //product2.setDescription(product.getDescription());
+            product2.setQuantity(quantity);
+            product2.setImageName(product.getImageName());
+            cart.add(product2);
+
+
+        }
+//
+        session.setAttribute("cartCount", cart.size());
+        // model.addAttribute("total",
+        // cart.stream().mapToDouble(Product::getPrice).sum());
+        session.setAttribute("total", cart.stream().mapToDouble(Product::getPrice).sum());
+        return ResponseEntity.ok().body(cart);
+    }
     @GetMapping("/jsoncart")
     public ResponseEntity<Model> jsoncart(Model model, HttpSession session){
 
@@ -171,7 +190,28 @@ public class CartController {
         model.addAttribute("cart", cart);
         return "cart";
     }
+    @GetMapping("/gscart")
+    public ResponseEntity<Model> gscartGet(Model model, HttpSession session) {
+        cart = (List<Product>) session.getAttribute("cart");
+        if (cart == null) {
+            cart = new ArrayList<>();
+            session.setAttribute("cart", cart);
+        }
 
+        int totalQuantity = 0;
+        for (Product p : productService.getAllProduct()) {
+            for (Product c : cart) {
+                if (p.getId() == c.getId()) {
+                    totalQuantity = p.getQuantity();
+                }
+            }
+        }
+        model.addAttribute("totalQuantity", totalQuantity);
+        model.addAttribute("cartCount", cart.size());
+        model.addAttribute("total", cart.stream().mapToDouble(Product::getPrice).sum());
+        model.addAttribute("cart", cart);
+        return ResponseEntity.ok().body(model);
+    }
     @GetMapping("/cart/removeItem/{index}")
     public String cartItemRemove(@PathVariable int index, HttpSession session, Model model) {
         cart = (List<Product>) session.getAttribute("cart");
@@ -252,3 +292,21 @@ public class CartController {
     }
 
 }
+//@PostMapping("/jsoncart")
+//    public ResponseEntity<FileReader> jsoncart() throws FileNotFoundException {
+//        Gson gson = new Gson();
+//        String json = gson.toJson(cart);
+//        try (FileWriter writer = new FileWriter("cart.json")) {
+//            writer.write(json);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        FileReader red = new FileReader("cart.json");
+////        try (FileReader reader = new FileReader("person.json")) {
+////            // Đọc nội dung từ tệp và chuyển đổi thành đối tượng
+////
+////        } catch (IOException e) {
+////            e.printStackTrace();
+////        }
+//        return ResponseEntity.ok(red);
+//    }
