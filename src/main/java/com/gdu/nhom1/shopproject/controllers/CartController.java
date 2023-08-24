@@ -13,16 +13,13 @@ import com.gdu.nhom1.shopproject.models.CartItem;
 import com.gdu.nhom1.shopproject.repository.CartItemReponsitory;
 import com.gdu.nhom1.shopproject.services.CartItemService;
 import com.google.gson.Gson;
+import io.swagger.annotations.ResponseHeader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 
 import com.gdu.nhom1.shopproject.dto.BillDTO;
 import com.gdu.nhom1.shopproject.models.Bill;
@@ -30,8 +27,9 @@ import com.gdu.nhom1.shopproject.models.Product;
 import com.gdu.nhom1.shopproject.services.BillService;
 import com.gdu.nhom1.shopproject.services.ProductService;
 import com.gdu.nhom1.shopproject.services.UserService;
+import org.springframework.web.client.HttpClientErrorException;
 
-@Controller
+@RestController
 @SessionAttributes("cart")
 public class CartController {
     @Autowired
@@ -125,11 +123,11 @@ public class CartController {
         return ResponseEntity.ok().body(cart);
     }
     @GetMapping("/jsoncart")
-    public ResponseEntity<Model> jsoncart(Model model, HttpSession session){
-
-        model.addAttribute("cartitem", reponsitory.findAll());
-        session.setAttribute("session", session);
-        return ResponseEntity.ok(model);
+    public ResponseEntity<Model> jsoncart(@RequestHeader(name = "Authorization") Model model, HttpSession session){
+            model.addAttribute("cartitem", reponsitory.findAll());
+            session.setAttribute("session", session);
+            return ResponseEntity.ok().body(model);
+        //return ResponseEntity.ok(model);
     }
 
 

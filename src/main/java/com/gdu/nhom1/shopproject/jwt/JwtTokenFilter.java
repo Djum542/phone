@@ -38,10 +38,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
 		String token = getAccessToken(request);
 
-//		if (!jwtUtil.validateAccessToken(token)) {
-//			filterChain.doFilter(request, response);
-//			return;
-//		}
+		if (!jwtUtil.validateAccessToken(token)) {
+			filterChain.doFilter(request, response);
+			return;
+		}
 
 		setAuthenticationContext(token, request);
 		filterChain.doFilter(request, response);

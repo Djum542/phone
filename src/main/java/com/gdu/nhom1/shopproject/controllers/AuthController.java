@@ -52,9 +52,9 @@ public class AuthController {
 //        }
 //    }
 
-    @GetMapping("/403")
+    @GetMapping("/error")
     public String errorPage() {
-        return "403";
+        return "There was an unexpected error (type=Unauthorized, status=401).";
     }
 
 }

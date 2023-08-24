@@ -2,7 +2,10 @@ package com.gdu.nhom1.shopproject;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.gdu.nhom1.shopproject.dto.AuthResponse;
+import com.gdu.nhom1.shopproject.jwt.CustomAuthenticationEntryPoint;
 import com.gdu.nhom1.shopproject.jwt.JwtTokenFilter;
+import com.gdu.nhom1.shopproject.jwt.JwtTokenUtil;
 import com.gdu.nhom1.shopproject.repository.UserRepository;
 import com.gdu.nhom1.shopproject.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
@@ -48,16 +54,20 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable();
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
-		
+		http.exceptionHandling()
+						.authenticationEntryPoint(entryPoint());
 		http.authorizeRequests()
-				.antMatchers("/auth/login","/register**", "/", "/shop/**", "/login", "/json",
-						  "/jsonpro", "/jsoncart","/swagger-ui.html" ).permitAll()
+				.antMatchers("/auth/login","/register**", "/", "/shop/**", "/login", "/json","/swagger-ui.html" ).permitAll()
 				//.antMatchers("/users/**").hasRole("USER")
 				.anyRequest().authenticated()
 				.and()
+//				.addFilter(new JwtTokenFilter())
 				.formLogin()
 				.loginPage("/login")
-				.defaultSuccessUrl("/");
+				.defaultSuccessUrl("/")
+				.failureHandler(authReponse())
+				.and()
+				.httpBasic();
 		
         http.exceptionHandling()
                 .authenticationEntryPoint(
@@ -89,4 +99,14 @@ public class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 //        auth.setPasswordEncoder(passwordEncoder());
 //        return auth;
 //    }
+	@Bean
+	public AuthenticationFailureHandler authReponse(){
+		SimpleUrlAuthenticationFailureHandler messageError = new SimpleUrlAuthenticationFailureHandler();
+		messageError.setDefaultFailureUrl("/error");
+		return messageError;
+	}
+	@Bean
+	public AuthenticationEntryPoint entryPoint(){
+		return new CustomAuthenticationEntryPoint();
+	}
 }

@@ -16,6 +16,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import org.springframework.web.client.HttpClientErrorException;
 
 
 @Component
@@ -49,11 +50,13 @@ public class JwtTokenUtil {
 		} catch (IllegalArgumentException ex) {
 			LOGGER.error("Token is null, empty or only whitespace", ex.getMessage());
 		} catch (MalformedJwtException ex) {
-			LOGGER.error("JWT is invalid", ex);
+			LOGGER.error("JWT is invalid", ex.getMessage());
 		} catch (UnsupportedJwtException ex) {
 			LOGGER.error("JWT is not supported", ex);
 		} catch (SignatureException ex) {
 			LOGGER.error("Signature validation failed");
+		}catch (HttpClientErrorException.Unauthorized e){
+			LOGGER.error("Unauthozition", e.getMessage());
 		}
 		
 		return false;
